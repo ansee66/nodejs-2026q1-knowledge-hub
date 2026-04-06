@@ -9,6 +9,7 @@ export const API_MESSAGES = {
   ARTICLE: {
     NOT_FOUND: 'Article not found',
     INVALID_ID: 'Invalid article id',
+    DELETED: 'Article successfully deleted',
   },
 
   CATEGORY: {
