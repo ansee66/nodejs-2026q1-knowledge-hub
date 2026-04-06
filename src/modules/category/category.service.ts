@@ -4,9 +4,11 @@ import { API_MESSAGES } from 'src/common/constants/api-messages.constants';
 import { randomUUID } from 'node:crypto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { ArticleService } from '../article/article.service';
 
 @Injectable()
 export class CategoryService {
+  constructor(private readonly articleService: ArticleService) {}
   private categories: Category[] = [];
 
   findAll(): Category[] {
@@ -50,6 +52,8 @@ export class CategoryService {
     if (index === -1) {
       throw new NotFoundException(API_MESSAGES.CATEGORY.NOT_FOUND);
     }
+
+    this.articleService.unsetCategoryIdInArticles(id);
 
     this.categories.splice(index, 1);
   }

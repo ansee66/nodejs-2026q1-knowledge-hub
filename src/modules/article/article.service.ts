@@ -94,4 +94,17 @@ export class ArticleService {
 
     this.articles.splice(index, 1);
   }
+
+  unsetCategoryIdInArticles(categoryId: string): void {
+    this.articles = this.articles.map((article) => {
+      if (article.categoryId === categoryId) {
+        return {
+          ...article,
+          categoryId: null,
+        };
+      }
+
+      return article;
+    });
+  }
 }
