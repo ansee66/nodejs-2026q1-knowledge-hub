@@ -19,6 +19,8 @@ export const API_MESSAGES = {
 
   COMMENT: {
     NOT_FOUND: 'Comment not found',
+    ARTICLE_ID_REQUIRED: 'Article id is required',
+    DELETED: 'Comment successfully deleted',
   },
 
   COMMON: {
