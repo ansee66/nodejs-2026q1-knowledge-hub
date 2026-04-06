@@ -15,6 +15,7 @@ import { API_MESSAGES } from 'src/common/constants/api-messages.constants';
 import { ApiNoContentResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -42,7 +43,7 @@ export class CategoryController {
 
   @Put(':id')
   @ApiNotFoundResponse({ description: API_MESSAGES.CATEGORY.NOT_FOUND })
-  updatePassword(@Param('id') id: string, @Body() dto: CreateCategoryDto) {
+  update(@Param('id') id: string, @Body() dto: UpdateCategoryDto) {
     if (!isUUID(id)) {
       throw new BadRequestException(API_MESSAGES.COMMON.INVALID_UUID);
     }

@@ -3,6 +3,7 @@ import { Category } from './category.interface';
 import { API_MESSAGES } from 'src/common/constants/api-messages.constants';
 import { randomUUID } from 'node:crypto';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoryService {
@@ -34,12 +35,8 @@ export class CategoryService {
     return category;
   }
 
-  update(id: string, dto: CreateCategoryDto): Category {
-    const category = this.categories.find((category) => category.id === id);
-
-    if (!category) {
-      throw new NotFoundException(API_MESSAGES.CATEGORY.NOT_FOUND);
-    }
+  update(id: string, dto: UpdateCategoryDto): Category {
+    const category = this.findById(id);
 
     category.name = dto.name;
     category.description = dto.description;
