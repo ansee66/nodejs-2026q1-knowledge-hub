@@ -53,7 +53,7 @@ export class CategoryService {
       throw new NotFoundException(API_MESSAGES.CATEGORY.NOT_FOUND);
     }
 
-    this.articleService.unsetCategoryIdInArticles(id);
+    this.articleService.unsetCategoryId(id);
 
     this.categories.splice(index, 1);
   }

@@ -95,16 +95,24 @@ export class ArticleService {
     this.articles.splice(index, 1);
   }
 
-  unsetCategoryIdInArticles(categoryId: string): void {
+  unsetParam(key: string, value: string): void {
     this.articles = this.articles.map((article) => {
-      if (article.categoryId === categoryId) {
+      if (article[key] === value) {
         return {
           ...article,
-          categoryId: null,
+          [key]: null,
         };
       }
 
       return article;
     });
+  }
+
+  unsetCategoryId(categoryId: string): void {
+    this.unsetParam('categoryId', categoryId);
+  }
+
+  unsetAuthorId(authorId: string): void {
+    this.unsetParam('authorId', authorId);
   }
 }

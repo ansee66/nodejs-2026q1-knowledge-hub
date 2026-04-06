@@ -70,4 +70,8 @@ export class CommentService {
   deleteByArticleId(articleId: string): void {
     this.comments = this.comments.filter((c) => c.articleId !== articleId);
   }
+
+  deleteByAuthorId(authorId: string): void {
+    this.comments = this.comments.filter((c) => c.authorId !== authorId);
+  }
 }

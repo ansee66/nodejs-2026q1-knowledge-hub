@@ -9,9 +9,15 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserRole } from 'src/common/enums';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { API_MESSAGES } from 'src/common/constants/api-messages.constants';
+import { CommentService } from '../comment/comment.service';
+import { ArticleService } from '../article/article.service';
 
 @Injectable()
 export class UserService {
+  constructor(
+    private readonly articleService: ArticleService,
+    private readonly commentService: CommentService,
+  ) {}
   private users: User[] = [];
 
   findAll(): User[] {
@@ -64,6 +70,9 @@ export class UserService {
     if (index === -1) {
       throw new NotFoundException(API_MESSAGES.USER.NOT_FOUND);
     }
+
+    this.articleService.unsetAuthorId(id);
+    this.commentService.deleteByAuthorId(id);
 
     this.users.splice(index, 1);
   }
