@@ -1,5 +1,11 @@
 import { randomUUID } from 'node:crypto';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { CommentService } from '../comment/comment.service';
 import { Article } from './article.interface';
 import { ArticleStatus } from 'src/common/enums';
 import { API_MESSAGES } from 'src/common/constants/api-messages.constants';
@@ -9,6 +15,10 @@ import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Injectable()
 export class ArticleService {
+  constructor(
+    @Inject(forwardRef(() => CommentService))
+    private readonly commentService: CommentService,
+  ) {}
   private articles: Article[] = [];
 
   findAll(query: GetArticlesQueryDto): Article[] {
@@ -76,11 +86,11 @@ export class ArticleService {
   }
 
   delete(id: string): void {
-    const index = this.articles.findIndex((article) => article.id === id);
+    const article = this.findById(id);
 
-    if (index === -1) {
-      throw new NotFoundException(API_MESSAGES.ARTICLE.NOT_FOUND);
-    }
+    this.commentService.deleteByArticleId(article.id);
+
+    const index = this.articles.findIndex((a) => a.id === id);
 
     this.articles.splice(index, 1);
   }

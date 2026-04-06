@@ -1,5 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import {
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
@@ -12,7 +14,10 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 
 @Injectable()
 export class CommentService {
-  constructor(private readonly articleService: ArticleService) {}
+  constructor(
+    @Inject(forwardRef(() => ArticleService))
+    private readonly articleService: ArticleService,
+  ) {}
 
   private comments: Comment[] = [];
 
@@ -60,5 +65,9 @@ export class CommentService {
     }
 
     this.comments.splice(index, 1);
+  }
+
+  deleteByArticleId(articleId: string): void {
+    this.comments = this.comments.filter((c) => c.articleId !== articleId);
   }
 }
