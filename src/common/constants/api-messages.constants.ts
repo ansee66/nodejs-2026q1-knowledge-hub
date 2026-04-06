@@ -13,6 +13,7 @@ export const API_MESSAGES = {
 
   CATEGORY: {
     NOT_FOUND: 'Category not found',
+    DELETED: 'Category successfully deleted',
   },
 
   COMMENT: {
