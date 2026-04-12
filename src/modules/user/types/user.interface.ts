@@ -1,4 +1,4 @@
-import { UserRole } from 'src/common/enums';
+import { UserRole } from '@prisma/client';
 
 export interface User {
   id: string;

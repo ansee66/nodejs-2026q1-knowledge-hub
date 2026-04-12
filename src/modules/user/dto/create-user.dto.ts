@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { UserRole } from '../../../common/enums';
+import { UserRole } from '@prisma/client';
 
 export class CreateUserDto {
   @IsString()
