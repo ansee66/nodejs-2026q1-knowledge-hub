@@ -91,4 +91,9 @@ To run project
 docker-compose up --build
 ```
 
+To run adminer
+```
+docker-compose --profile debug up
+```
+
 Image on Docker hub: https://hub.docker.com/repository/docker/ansee66/kn-hub-api/general
