@@ -96,4 +96,9 @@ To run adminer
 docker-compose --profile debug up
 ```
 
+To run seed script after starting docker containers
+```
+docker compose exec app npx prisma db seed
+```
+
 Image on Docker hub: https://hub.docker.com/repository/docker/ansee66/kn-hub-api/general
