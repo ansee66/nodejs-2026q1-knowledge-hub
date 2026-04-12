@@ -82,3 +82,13 @@ npm run format
 Press <kbd>F5</kbd> to debug.
 
 For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+
+### Containerization
+
+To run project
+
+```
+docker-compose up --build
+```
+
+Image on Docker hub: https://hub.docker.com/repository/docker/ansee66/kn-hub-api/general
