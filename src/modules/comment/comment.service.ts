@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import {
   forwardRef,
   Inject,
@@ -11,67 +10,72 @@ import { Comment } from './comment.interface';
 import { API_MESSAGES } from 'src/common/constants/api-messages.constants';
 import { GetCommentsQueryDto } from './dto/get-comments-query.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class CommentService {
   constructor(
+    private readonly prisma: PrismaService,
     @Inject(forwardRef(() => ArticleService))
     private readonly articleService: ArticleService,
   ) {}
 
-  private comments: Comment[] = [];
-
-  findAll(query: GetCommentsQueryDto): Comment[] {
-    return this.comments.filter((c) => c.articleId === query.articleId);
+  private mapComment(comment: any): Comment {
+    return {
+      ...comment,
+      createdAt: comment.createdAt.getTime(),
+    };
   }
 
-  findById(id: string): Comment {
-    const comment = this.comments.find((c) => c.id === id);
+  async findAll(query: GetCommentsQueryDto): Promise<Comment[]> {
+    const comments = await this.prisma.comment.findMany({
+      where: {
+        articleId: query.articleId,
+      },
+    });
+
+    return comments.map((c) => this.mapComment(c));
+  }
+
+  async findById(id: string): Promise<Comment> {
+    const comment = await this.prisma.comment.findUnique({ where: { id } });
 
     if (!comment) {
       throw new NotFoundException(API_MESSAGES.COMMENT.NOT_FOUND);
     }
 
-    return comment;
+    return this.mapComment(comment);
   }
 
-  create(dto: CreateCommentDto): Comment {
+  async create(dto: CreateCommentDto): Promise<Comment> {
     try {
       this.articleService.findById(dto.articleId);
     } catch {
       throw new UnprocessableEntityException(API_MESSAGES.ARTICLE.NOT_FOUND);
     }
 
-    const now = Date.now();
+    const comment = await this.prisma.comment.create({
+      data: {
+        content: dto.content,
+        articleId: dto.articleId,
+        authorId: dto.authorId ?? null,
+      },
+    });
 
-    const comment: Comment = {
-      id: randomUUID(),
-      content: dto.content,
-      articleId: dto.articleId,
-      authorId: dto.authorId ?? null,
-      createdAt: now,
-    };
-
-    this.comments.push(comment);
-
-    return comment;
+    return this.mapComment(comment);
   }
 
-  delete(id: string): void {
-    const index = this.comments.findIndex((comment) => comment.id === id);
+  async delete(id: string): Promise<void> {
+    const comment = await this.prisma.comment.findUnique({
+      where: { id },
+    });
 
-    if (index === -1) {
+    if (!comment) {
       throw new NotFoundException(API_MESSAGES.COMMENT.NOT_FOUND);
     }
 
-    this.comments.splice(index, 1);
-  }
-
-  deleteByArticleId(articleId: string): void {
-    this.comments = this.comments.filter((c) => c.articleId !== articleId);
-  }
-
-  deleteByAuthorId(authorId: string): void {
-    this.comments = this.comments.filter((c) => c.authorId !== authorId);
+    await this.prisma.comment.delete({
+      where: { id },
+    });
   }
 }

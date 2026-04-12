@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { ArticleStatus } from 'src/common/enums';
+import { ArticleStatus } from '@prisma/client';
 
 export class GetArticlesQueryDto {
   @IsOptional()

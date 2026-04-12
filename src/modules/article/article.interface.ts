@@ -1,4 +1,4 @@
-import { ArticleStatus } from 'src/common/enums';
+import { ArticleStatus } from '@prisma/client';
 
 export interface Article {
   id: string;
