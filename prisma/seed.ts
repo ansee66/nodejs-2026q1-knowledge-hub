@@ -1,6 +1,11 @@
+import 'dotenv/config';
 import { PrismaClient, UserRole, ArticleStatus } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({
+  connectionString: process.env['DATABASE_URL']!,
+});
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   const admin = await prisma.user.create({
