@@ -35,5 +35,8 @@ export const API_MESSAGES = {
     INVALID_PASSWORD: 'Password is incorrect',
     REFRESH_TOKEN_IS_REQUIRED: 'Refresh token is required',
     INVALID_REFRESH_TOKEN: 'Invalid refresh token',
+    AUTH_HEADER_IS_REQUIRED: 'Authorization header is required',
+    INVALID_AUTH_SCHEME: 'Invalid auth scheme',
+    INVALID_TOKEN: 'Invalid token',
   },
 } as const;

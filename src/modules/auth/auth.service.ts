@@ -79,7 +79,7 @@ export class AuthService {
 
   async refresh(dto: RefreshDto) {
     console.log('refresh dto', dto);
-    if (!dto?.refreshToken) {
+    if (!dto.refreshToken) {
       throw new UnauthorizedException(
         API_MESSAGES.AUTH.REFRESH_TOKEN_IS_REQUIRED,
       );
