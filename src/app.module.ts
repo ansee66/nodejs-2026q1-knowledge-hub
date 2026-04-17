@@ -6,11 +6,13 @@ import { CategoryModule } from './modules/category/category.module';
 import { ArticleModule } from './modules/article/article.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
     PrismaModule,
     UserModule,
+    AuthModule,
     CategoryModule,
     ArticleModule,
     CommentModule,

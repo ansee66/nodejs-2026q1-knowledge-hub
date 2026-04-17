@@ -29,7 +29,11 @@ export const API_MESSAGES = {
   },
 
   AUTH: {
+    SUCCESS_SIGNUP: 'You have successfully registered',
     INVALID_LOGIN: 'Login is not registered',
     BUSY_LOGIN: 'Login is already taken',
+    INVALID_PASSWORD: 'Password is incorrect',
+    REFRESH_TOKEN_IS_REQUIRED: 'Refresh token is required',
+    INVALID_REFRESH_TOKEN: 'Invalid refresh token',
   },
 } as const;
