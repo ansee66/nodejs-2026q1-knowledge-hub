@@ -27,4 +27,9 @@ export const API_MESSAGES = {
     INVALID_UUID: 'Invalid UUID',
     BAD_REQUEST: 'Bad request',
   },
+
+  AUTH: {
+    INVALID_LOGIN: 'Login is not registered',
+    BUSY_LOGIN: 'Login is already taken',
+  },
 } as const;

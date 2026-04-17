@@ -43,6 +43,11 @@ export class UserService {
     return this.mapUser(user);
   }
 
+  async findByLogin(login: string): Promise<User> {
+    const user = await this.prisma.user.findUnique({ where: { login } });
+    return this.mapUser(user);
+  }
+
   async create(dto: CreateUserDto): Promise<User> {
     const user = await this.prisma.user.create({
       data: {
