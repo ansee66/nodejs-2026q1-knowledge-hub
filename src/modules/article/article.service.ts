@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   forwardRef,
   Inject,
   Injectable,
@@ -6,12 +7,13 @@ import {
 } from '@nestjs/common';
 import { CommentService } from '../comment/comment.service';
 import { Article } from './article.interface';
-import { Prisma, ArticleStatus } from '@prisma/client';
+import { Prisma, ArticleStatus, UserRole } from '@prisma/client';
 import { API_MESSAGES } from 'src/common/constants/api-messages.constants';
 import { GetArticlesQueryDto } from './dto/get-articles-query.dto';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 @Injectable()
 export class ArticleService {
@@ -21,13 +23,26 @@ export class ArticleService {
     private readonly commentService: CommentService,
   ) {}
 
-  private mapArticle(article: any): Article {
+  private mapArticle(
+    article: Prisma.ArticleGetPayload<{
+      include: { tags: true };
+    }>,
+  ): Article {
     return {
       ...article,
       createdAt: article.createdAt.getTime(),
       updatedAt: article.updatedAt.getTime(),
       tags: article.tags?.map((t) => t.name) ?? [],
     };
+  }
+
+  private assertUserOwnsArticle(
+    user: JwtPayload,
+    articleAuthorId: string | null,
+  ): void {
+    if (user.role === UserRole.EDITOR && articleAuthorId !== user.userId) {
+      throw new ForbiddenException(API_MESSAGES.ROLES.EDITOR_LIMITATIONS);
+    }
   }
 
   async findAll(query: GetArticlesQueryDto): Promise<Article[]> {
@@ -72,13 +87,15 @@ export class ArticleService {
     return this.mapArticle(article);
   }
 
-  async create(dto: CreateArticleDto): Promise<Article> {
+  async create(dto: CreateArticleDto, user: JwtPayload): Promise<Article> {
+    const authorId =
+      user.role === UserRole.EDITOR ? user.userId : (dto.authorId ?? null);
     const article = await this.prisma.article.create({
       data: {
         title: dto.title,
         content: dto.content,
         status: dto.status ?? ArticleStatus.DRAFT,
-        authorId: dto.authorId ?? null,
+        authorId: authorId,
         categoryId: dto.categoryId ?? null,
 
         tags: {
@@ -94,8 +111,13 @@ export class ArticleService {
     return this.mapArticle(article);
   }
 
-  async update(id: string, dto: UpdateArticleDto): Promise<Article> {
-    await this.findById(id);
+  async update(
+    id: string,
+    dto: UpdateArticleDto,
+    user: JwtPayload,
+  ): Promise<Article> {
+    const prevArticle = await this.findById(id);
+    this.assertUserOwnsArticle(user, prevArticle.authorId);
 
     const article = await this.prisma.article.update({
       where: { id },
@@ -122,8 +144,9 @@ export class ArticleService {
     return this.mapArticle(article);
   }
 
-  async delete(id: string): Promise<void> {
-    await this.findById(id);
+  async delete(id: string, user: JwtPayload): Promise<void> {
+    const prevArticle = await this.findById(id);
+    this.assertUserOwnsArticle(user, prevArticle.authorId);
 
     await this.prisma.article.delete({
       where: { id },

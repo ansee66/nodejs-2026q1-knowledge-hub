@@ -38,5 +38,13 @@ export const API_MESSAGES = {
     AUTH_HEADER_IS_REQUIRED: 'Authorization header is required',
     INVALID_AUTH_SCHEME: 'Invalid auth scheme',
     INVALID_TOKEN: 'Invalid token',
+    AUTH_IS_REQUIRED: 'Authorization is required',
+  },
+
+  ROLES: {
+    VIEWER_LIMITATIONS: 'Your role is viewer, you can only read',
+    FORBIDDEN: 'You do not have enough permissions for this request',
+    EDITOR_LIMITATIONS: 'You can manage only your materials',
+    CATEGORY_LIMITATIONS: 'You can not manage categories',
   },
 } as const;

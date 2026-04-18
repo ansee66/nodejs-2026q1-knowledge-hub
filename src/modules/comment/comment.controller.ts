@@ -16,6 +16,8 @@ import { ApiNoContentResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { GetCommentsQueryDto } from './dto/get-comments-query.dto';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 @Controller('comment')
 export class CommentController {
@@ -39,19 +41,19 @@ export class CommentController {
   }
 
   @Post()
-  create(@Body() dto: CreateCommentDto) {
-    return this.commentService.create(dto);
+  create(@Body() dto: CreateCommentDto, @CurrentUser() user: JwtPayload) {
+    return this.commentService.create(dto, user);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: API_MESSAGES.COMMENT.DELETED })
   @ApiNotFoundResponse({ description: API_MESSAGES.COMMENT.NOT_FOUND })
-  delete(@Param('id') id: string) {
+  delete(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     if (!isUUID(id)) {
       throw new BadRequestException(API_MESSAGES.COMMON.INVALID_UUID);
     }
 
-    this.commentService.delete(id);
+    this.commentService.delete(id, user);
   }
 }

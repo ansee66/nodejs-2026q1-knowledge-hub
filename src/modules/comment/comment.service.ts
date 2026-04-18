@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   forwardRef,
   Inject,
   Injectable,
@@ -11,6 +12,8 @@ import { API_MESSAGES } from 'src/common/constants/api-messages.constants';
 import { GetCommentsQueryDto } from './dto/get-comments-query.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UserRole } from '@prisma/client';
+import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 @Injectable()
 export class CommentService {
@@ -25,6 +28,15 @@ export class CommentService {
       ...comment,
       createdAt: comment.createdAt.getTime(),
     };
+  }
+
+  private assertUserOwnsComment(
+    user: JwtPayload,
+    commentAuthorId: string | null,
+  ): void {
+    if (user.role === UserRole.EDITOR && commentAuthorId !== user.userId) {
+      throw new ForbiddenException(API_MESSAGES.ROLES.EDITOR_LIMITATIONS);
+    }
   }
 
   async findAll(query: GetCommentsQueryDto): Promise<Comment[]> {
@@ -47,32 +59,30 @@ export class CommentService {
     return this.mapComment(comment);
   }
 
-  async create(dto: CreateCommentDto): Promise<Comment> {
+  async create(dto: CreateCommentDto, user: JwtPayload): Promise<Comment> {
     try {
       this.articleService.findById(dto.articleId);
     } catch {
       throw new UnprocessableEntityException(API_MESSAGES.ARTICLE.NOT_FOUND);
     }
 
+    const authorId =
+      user.role === UserRole.EDITOR ? user.userId : (dto.authorId ?? null);
     const comment = await this.prisma.comment.create({
       data: {
         content: dto.content,
         articleId: dto.articleId,
-        authorId: dto.authorId ?? null,
+        authorId: authorId,
       },
     });
 
     return this.mapComment(comment);
   }
 
-  async delete(id: string): Promise<void> {
-    const comment = await this.prisma.comment.findUnique({
-      where: { id },
-    });
+  async delete(id: string, user: JwtPayload): Promise<void> {
+    const comment = await this.findById(id);
 
-    if (!comment) {
-      throw new NotFoundException(API_MESSAGES.COMMENT.NOT_FOUND);
-    }
+    this.assertUserOwnsComment(user, comment.authorId);
 
     await this.prisma.comment.delete({
       where: { id },

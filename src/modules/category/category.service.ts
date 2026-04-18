@@ -1,17 +1,25 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Category } from './category.interface';
 import { API_MESSAGES } from 'src/common/constants/api-messages.constants';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { ArticleService } from '../article/article.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UserRole } from '@prisma/client';
+import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 @Injectable()
 export class CategoryService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly articleService: ArticleService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
+
+  private checkRole(user: JwtPayload): void {
+    if (user.role === UserRole.EDITOR) {
+      throw new ForbiddenException(API_MESSAGES.ROLES.CATEGORY_LIMITATIONS);
+    }
+  }
 
   async findAll(): Promise<Category[]> {
     return await this.prisma.category.findMany();
@@ -27,7 +35,9 @@ export class CategoryService {
     return category;
   }
 
-  async create(dto: CreateCategoryDto): Promise<Category> {
+  async create(dto: CreateCategoryDto, user: JwtPayload): Promise<Category> {
+    this.checkRole(user);
+
     return await this.prisma.category.create({
       data: {
         name: dto.name,
@@ -36,7 +46,13 @@ export class CategoryService {
     });
   }
 
-  async update(id: string, dto: UpdateCategoryDto): Promise<Category> {
+  async update(
+    id: string,
+    dto: UpdateCategoryDto,
+    user: JwtPayload,
+  ): Promise<Category> {
+    this.checkRole(user);
+
     const category = await this.findById(id);
 
     category.name = dto.name;
@@ -51,7 +67,9 @@ export class CategoryService {
     });
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string, user: JwtPayload): Promise<void> {
+    this.checkRole(user);
+
     await this.prisma.category.delete({
       where: { id },
     });
