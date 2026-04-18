@@ -24,28 +24,31 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Get()
-  getAll() {
-    return this.categoryService.findAll();
+  async getAll() {
+    return await this.categoryService.findAll();
   }
 
   @Get(':id')
   @ApiNotFoundResponse({ description: API_MESSAGES.CATEGORY.NOT_FOUND })
-  getById(@Param('id') id: string) {
+  async getById(@Param('id') id: string) {
     if (!isUUID(id)) {
       throw new BadRequestException(API_MESSAGES.COMMON.INVALID_UUID);
     }
 
-    return this.categoryService.findById(id);
+    return await this.categoryService.findById(id);
   }
 
   @Post()
-  create(@Body() dto: CreateCategoryDto, @CurrentUser() user: JwtPayload) {
-    return this.categoryService.create(dto, user);
+  async create(
+    @Body() dto: CreateCategoryDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return await this.categoryService.create(dto, user);
   }
 
   @Put(':id')
   @ApiNotFoundResponse({ description: API_MESSAGES.CATEGORY.NOT_FOUND })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() dto: UpdateCategoryDto,
     @CurrentUser() user: JwtPayload,
@@ -54,18 +57,18 @@ export class CategoryController {
       throw new BadRequestException(API_MESSAGES.COMMON.INVALID_UUID);
     }
 
-    return this.categoryService.update(id, dto, user);
+    return await this.categoryService.update(id, dto, user);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: API_MESSAGES.CATEGORY.DELETED })
   @ApiNotFoundResponse({ description: API_MESSAGES.CATEGORY.NOT_FOUND })
-  delete(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+  async delete(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     if (!isUUID(id)) {
       throw new BadRequestException(API_MESSAGES.COMMON.INVALID_UUID);
     }
 
-    this.categoryService.delete(id, user);
+    await this.categoryService.delete(id, user);
   }
 }

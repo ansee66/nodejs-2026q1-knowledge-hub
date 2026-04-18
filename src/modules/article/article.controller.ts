@@ -26,28 +26,28 @@ export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Get()
-  getAll(@Query() query: GetArticlesQueryDto) {
-    return this.articleService.findAll(query);
+  async getAll(@Query() query: GetArticlesQueryDto) {
+    return await this.articleService.findAll(query);
   }
 
   @Get(':id')
   @ApiNotFoundResponse({ description: API_MESSAGES.ARTICLE.NOT_FOUND })
-  getById(@Param('id') id: string) {
+  async getById(@Param('id') id: string) {
     if (!isUUID(id)) {
       throw new BadRequestException(API_MESSAGES.COMMON.INVALID_UUID);
     }
 
-    return this.articleService.findById(id);
+    return await this.articleService.findById(id);
   }
 
   @Post()
-  create(@Body() dto: CreateArticleDto, @CurrentUser() user: JwtPayload) {
-    return this.articleService.create(dto, user);
+  async create(@Body() dto: CreateArticleDto, @CurrentUser() user: JwtPayload) {
+    return await this.articleService.create(dto, user);
   }
 
   @Put(':id')
   @ApiNotFoundResponse({ description: API_MESSAGES.ARTICLE.NOT_FOUND })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() dto: UpdateArticleDto,
     @CurrentUser() user: JwtPayload,
@@ -56,18 +56,18 @@ export class ArticleController {
       throw new BadRequestException(API_MESSAGES.COMMON.INVALID_UUID);
     }
 
-    return this.articleService.update(id, dto, user);
+    return await this.articleService.update(id, dto, user);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: API_MESSAGES.ARTICLE.DELETED })
   @ApiNotFoundResponse({ description: API_MESSAGES.ARTICLE.NOT_FOUND })
-  delete(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+  async delete(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     if (!isUUID(id)) {
       throw new BadRequestException(API_MESSAGES.COMMON.INVALID_UUID);
     }
 
-    this.articleService.delete(id, user);
+    await this.articleService.delete(id, user);
   }
 }

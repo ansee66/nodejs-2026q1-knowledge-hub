@@ -24,36 +24,36 @@ export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Get()
-  getAll(@Query() query: GetCommentsQueryDto) {
+  async getAll(@Query() query: GetCommentsQueryDto) {
     if (!query.articleId) {
       throw new BadRequestException(API_MESSAGES.COMMENT.ARTICLE_ID_REQUIRED);
     }
-    return this.commentService.findAll(query);
+    return await this.commentService.findAll(query);
   }
 
   @Get(':id')
-  getById(@Param('id') id: string) {
+  async getById(@Param('id') id: string) {
     if (!isUUID(id)) {
       throw new BadRequestException(API_MESSAGES.COMMON.INVALID_UUID);
     }
 
-    return this.commentService.findById(id);
+    return await this.commentService.findById(id);
   }
 
   @Post()
-  create(@Body() dto: CreateCommentDto, @CurrentUser() user: JwtPayload) {
-    return this.commentService.create(dto, user);
+  async create(@Body() dto: CreateCommentDto, @CurrentUser() user: JwtPayload) {
+    return await this.commentService.create(dto, user);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: API_MESSAGES.COMMENT.DELETED })
   @ApiNotFoundResponse({ description: API_MESSAGES.COMMENT.NOT_FOUND })
-  delete(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+  async delete(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     if (!isUUID(id)) {
       throw new BadRequestException(API_MESSAGES.COMMON.INVALID_UUID);
     }
 
-    this.commentService.delete(id, user);
+    await this.commentService.delete(id, user);
   }
 }

@@ -25,44 +25,47 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  getAll() {
-    return this.userService.findAll();
+  async getAll() {
+    return await this.userService.findAll();
   }
 
   @Get(':id')
   @ApiNotFoundResponse({ description: API_MESSAGES.USER.NOT_FOUND })
-  getById(@Param('id') id: string) {
+  async getById(@Param('id') id: string) {
     if (!isUUID(id)) {
       throw new BadRequestException(API_MESSAGES.COMMON.INVALID_UUID);
     }
 
-    return this.userService.findById(id);
+    return await this.userService.findById(id);
   }
 
   @Post()
-  create(@Body() dto: CreateUserDto) {
-    return this.userService.create(dto);
+  async create(@Body() dto: CreateUserDto) {
+    return await this.userService.create(dto);
   }
 
   @Put(':id')
   @ApiNotFoundResponse({ description: API_MESSAGES.USER.NOT_FOUND })
-  updatePassword(@Param('id') id: string, @Body() dto: UpdatePasswordDto) {
+  async updatePassword(
+    @Param('id') id: string,
+    @Body() dto: UpdatePasswordDto,
+  ) {
     if (!isUUID(id)) {
       throw new BadRequestException(API_MESSAGES.COMMON.INVALID_UUID);
     }
 
-    return this.userService.updatePassword(id, dto);
+    return await this.userService.updatePassword(id, dto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: API_MESSAGES.USER.DELETED })
   @ApiNotFoundResponse({ description: API_MESSAGES.USER.NOT_FOUND })
-  delete(@Param('id') id: string) {
+  async delete(@Param('id') id: string) {
     if (!isUUID(id)) {
       throw new BadRequestException(API_MESSAGES.COMMON.INVALID_UUID);
     }
 
-    this.userService.delete(id);
+    await this.userService.delete(id);
   }
 }
