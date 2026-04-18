@@ -1,4 +1,6 @@
+import 'dotenv/config';
 import { Module } from '@nestjs/common';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './modules/user/user.module';
@@ -19,10 +21,20 @@ import { RolesGuard } from './modules/auth/guards/roles.guard';
     CategoryModule,
     ArticleModule,
     CommentModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: Number(process.env.IP_TIME_LIMIT),
+        limit: Number(process.env.IP_REQUESTS_LIMIT),
+      },
+    ]),
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
