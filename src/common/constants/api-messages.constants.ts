@@ -39,6 +39,8 @@ export const API_MESSAGES = {
     INVALID_AUTH_SCHEME: 'Invalid auth scheme',
     INVALID_TOKEN: 'Invalid token',
     AUTH_IS_REQUIRED: 'Authorization is required',
+    TOKEN_IS_REVOKED: 'Token is revoked',
+    LOGOUT: 'You have successfully log out',
   },
 
   ROLES: {

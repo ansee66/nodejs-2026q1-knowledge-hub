@@ -15,12 +15,15 @@ import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { AuthTokensResponseDto } from './dto/auth-tokens-response.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { LogoutDto } from './dto/logout.dto';
+import { TokenBlacklistService } from './token-blacklist.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly blacklist: TokenBlacklistService,
   ) {}
 
   private async generateTokens(user: User): Promise<AuthTokensResponseDto> {
@@ -78,11 +81,14 @@ export class AuthService {
   }
 
   async refresh(dto: RefreshDto) {
-    console.log('refresh dto', dto);
     if (!dto.refreshToken) {
       throw new UnauthorizedException(
         API_MESSAGES.AUTH.REFRESH_TOKEN_IS_REQUIRED,
       );
+    }
+
+    if (this.blacklist.has(dto.refreshToken)) {
+      throw new ForbiddenException(API_MESSAGES.AUTH.TOKEN_IS_REVOKED);
     }
 
     let payload: JwtPayload;
@@ -102,5 +108,9 @@ export class AuthService {
     if (!user) throw new ForbiddenException(API_MESSAGES.AUTH.INVALID_LOGIN);
 
     return this.generateTokens(user);
+  }
+
+  async logout(dto: LogoutDto): Promise<void> {
+    this.blacklist.add(dto.refreshToken);
   }
 }

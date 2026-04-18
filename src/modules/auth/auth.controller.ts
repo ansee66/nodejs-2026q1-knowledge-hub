@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
@@ -7,6 +7,8 @@ import { RefreshDto } from './dto/refresh.dto';
 import { API_MESSAGES } from 'src/common/constants/api-messages.constants';
 import { Public } from './decorators/public.decorator';
 import { Throttle } from '@nestjs/throttler';
+import { LogoutDto } from './dto/logout.dto';
+import { AllowAuthenticated } from './decorators/allow-authenticated.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -42,5 +44,13 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   refresh(@Body() dto: RefreshDto) {
     return this.authService.refresh(dto);
+  }
+
+  @AllowAuthenticated()
+  @Post('logout')
+  @HttpCode(200)
+  @ApiResponse({ status: 200, description: API_MESSAGES.AUTH.LOGOUT })
+  async logout(@Body() dto: LogoutDto): Promise<void> {
+    return this.authService.logout(dto);
   }
 }
