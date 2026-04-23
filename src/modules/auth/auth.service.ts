@@ -49,7 +49,7 @@ export class AuthService {
     };
   }
 
-  async signup(dto: SignupDto): Promise<void> {
+  async signup(dto: SignupDto): Promise<{ id: string }> {
     const existedUser = await this.userService.findByLogin(dto.login);
     if (existedUser) {
       throw new BadRequestException(API_MESSAGES.AUTH.BUSY_LOGIN);
@@ -60,10 +60,12 @@ export class AuthService {
       Number(process.env.CRYPT_SALT),
     );
 
-    await this.userService.create({
+    const user = await this.userService.create({
       login: dto.login,
       password: hash,
     });
+
+    return { id: user.id };
   }
 
   async login(dto: LoginDto): Promise<AuthTokensResponseDto> {

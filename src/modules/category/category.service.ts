@@ -16,7 +16,7 @@ export class CategoryService {
   constructor(private readonly prisma: PrismaService) {}
 
   private checkRole(user: JwtPayload): void {
-    if (user.role === UserRole.EDITOR) {
+    if (user.role === UserRole.editor) {
       throw new ForbiddenException(API_MESSAGES.ROLES.CATEGORY_LIMITATIONS);
     }
   }
@@ -69,6 +69,8 @@ export class CategoryService {
 
   async delete(id: string, user: JwtPayload): Promise<void> {
     this.checkRole(user);
+
+    await this.findById(id);
 
     await this.prisma.category.delete({
       where: { id },

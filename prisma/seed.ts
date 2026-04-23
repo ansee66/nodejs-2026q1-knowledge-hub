@@ -12,7 +12,7 @@ async function main() {
     data: {
       login: 'admin',
       password: '123',
-      role: UserRole.ADMIN,
+      role: UserRole.admin,
     },
   });
 
@@ -20,7 +20,7 @@ async function main() {
     data: {
       login: 'editor',
       password: '123',
-      role: UserRole.EDITOR,
+      role: UserRole.editor,
     },
   });
 
@@ -48,7 +48,7 @@ async function main() {
     data: {
       title: 'NestJS Basics',
       content: 'Intro to NestJS',
-      status: ArticleStatus.PUBLISHED,
+      status: ArticleStatus.published,
       authorId: admin.id,
       categoryId: tech.id,
       tags: {
@@ -61,7 +61,7 @@ async function main() {
     data: {
       title: 'Docker Guide',
       content: 'How to containerize apps',
-      status: ArticleStatus.DRAFT,
+      status: ArticleStatus.draft,
       authorId: editor.id,
       categoryId: tech.id,
       tags: {
@@ -74,7 +74,7 @@ async function main() {
     data: {
       title: 'Prisma ORM',
       content: 'Working with Prisma',
-      status: ArticleStatus.PUBLISHED,
+      status: ArticleStatus.published,
       authorId: admin.id,
       categoryId: science.id,
       tags: {
@@ -87,7 +87,7 @@ async function main() {
     data: {
       title: 'Life article',
       content: 'Some life content',
-      status: ArticleStatus.ARCHIVED,
+      status: ArticleStatus.archived,
       authorId: editor.id,
       categoryId: life.id,
       tags: {
@@ -100,7 +100,7 @@ async function main() {
     data: {
       title: 'API Design',
       content: 'Best practices',
-      status: ArticleStatus.PUBLISHED,
+      status: ArticleStatus.published,
       authorId: admin.id,
       categoryId: tech.id,
       tags: {

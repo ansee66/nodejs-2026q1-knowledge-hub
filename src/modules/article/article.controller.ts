@@ -20,6 +20,8 @@ import { UpdateArticleDto } from './dto/update-article.dto';
 import { GetArticlesQueryDto } from './dto/get-articles-query.dto';
 import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '@prisma/client';
 
 @Controller('article')
 export class ArticleController {
@@ -41,11 +43,13 @@ export class ArticleController {
   }
 
   @Post()
+  @Roles(UserRole.admin, UserRole.editor)
   async create(@Body() dto: CreateArticleDto, @CurrentUser() user: JwtPayload) {
     return await this.articleService.create(dto, user);
   }
 
   @Put(':id')
+  @Roles(UserRole.admin, UserRole.editor)
   @ApiNotFoundResponse({ description: API_MESSAGES.ARTICLE.NOT_FOUND })
   async update(
     @Param('id') id: string,
@@ -60,6 +64,7 @@ export class ArticleController {
   }
 
   @Delete(':id')
+  @Roles(UserRole.admin)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: API_MESSAGES.ARTICLE.DELETED })
   @ApiNotFoundResponse({ description: API_MESSAGES.ARTICLE.NOT_FOUND })

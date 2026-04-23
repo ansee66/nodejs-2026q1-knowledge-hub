@@ -18,6 +18,8 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { GetCommentsQueryDto } from './dto/get-comments-query.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '@prisma/client';
 
 @Controller('comment')
 export class CommentController {
@@ -41,11 +43,13 @@ export class CommentController {
   }
 
   @Post()
+  @Roles(UserRole.admin, UserRole.editor)
   async create(@Body() dto: CreateCommentDto, @CurrentUser() user: JwtPayload) {
     return await this.commentService.create(dto, user);
   }
 
   @Delete(':id')
+  @Roles(UserRole.admin)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: API_MESSAGES.COMMENT.DELETED })
   @ApiNotFoundResponse({ description: API_MESSAGES.COMMENT.NOT_FOUND })

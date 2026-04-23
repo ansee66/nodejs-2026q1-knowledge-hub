@@ -40,7 +40,7 @@ export class ArticleService {
     user: JwtPayload,
     articleAuthorId: string | null,
   ): void {
-    if (user.role === UserRole.EDITOR && articleAuthorId !== user.userId) {
+    if (user.role === UserRole.editor && articleAuthorId !== user.userId) {
       throw new ForbiddenException(API_MESSAGES.ROLES.EDITOR_LIMITATIONS);
     }
   }
@@ -89,12 +89,12 @@ export class ArticleService {
 
   async create(dto: CreateArticleDto, user: JwtPayload): Promise<Article> {
     const authorId =
-      user.role === UserRole.EDITOR ? user.userId : (dto.authorId ?? null);
+      user.role === UserRole.editor ? user.userId : (dto.authorId ?? null);
     const article = await this.prisma.article.create({
       data: {
         title: dto.title,
         content: dto.content,
-        status: dto.status ?? ArticleStatus.DRAFT,
+        status: dto.status ?? ArticleStatus.draft,
         authorId: authorId,
         categoryId: dto.categoryId ?? null,
 

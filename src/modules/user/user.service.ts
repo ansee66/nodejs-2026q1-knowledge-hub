@@ -53,7 +53,7 @@ export class UserService {
       data: {
         login: dto.login,
         password: dto.password,
-        role: dto.role ?? UserRole.VIEWER,
+        role: dto.role ?? UserRole.viewer,
       },
     });
     return this.mapUser(user);
@@ -66,7 +66,7 @@ export class UserService {
       throw new ForbiddenException(API_MESSAGES.USER.WRONG_PASSWORD);
     }
 
-    const updatedUser = this.prisma.user.update({
+    const updatedUser = await this.prisma.user.update({
       where: { id },
       data: {
         password: dto.newPassword,
@@ -76,6 +76,7 @@ export class UserService {
   }
 
   async delete(id: string): Promise<void> {
+    await this.findById(id);
     await this.prisma.user.delete({
       where: { id },
     });

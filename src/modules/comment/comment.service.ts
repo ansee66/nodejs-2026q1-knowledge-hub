@@ -34,7 +34,7 @@ export class CommentService {
     user: JwtPayload,
     commentAuthorId: string | null,
   ): void {
-    if (user.role === UserRole.EDITOR && commentAuthorId !== user.userId) {
+    if (user.role === UserRole.editor && commentAuthorId !== user.userId) {
       throw new ForbiddenException(API_MESSAGES.ROLES.EDITOR_LIMITATIONS);
     }
   }
@@ -61,13 +61,13 @@ export class CommentService {
 
   async create(dto: CreateCommentDto, user: JwtPayload): Promise<Comment> {
     try {
-      this.articleService.findById(dto.articleId);
+      await this.articleService.findById(dto.articleId);
     } catch {
       throw new UnprocessableEntityException(API_MESSAGES.ARTICLE.NOT_FOUND);
     }
 
     const authorId =
-      user.role === UserRole.EDITOR ? user.userId : (dto.authorId ?? null);
+      user.role === UserRole.editor ? user.userId : (dto.authorId ?? null);
     const comment = await this.prisma.comment.create({
       data: {
         content: dto.content,

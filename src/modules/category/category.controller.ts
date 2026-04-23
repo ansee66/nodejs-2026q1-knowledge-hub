@@ -18,6 +18,8 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '@prisma/client';
 
 @Controller('category')
 export class CategoryController {
@@ -39,6 +41,7 @@ export class CategoryController {
   }
 
   @Post()
+  @Roles(UserRole.admin)
   async create(
     @Body() dto: CreateCategoryDto,
     @CurrentUser() user: JwtPayload,
@@ -47,6 +50,7 @@ export class CategoryController {
   }
 
   @Put(':id')
+  @Roles(UserRole.admin)
   @ApiNotFoundResponse({ description: API_MESSAGES.CATEGORY.NOT_FOUND })
   async update(
     @Param('id') id: string,
@@ -61,6 +65,7 @@ export class CategoryController {
   }
 
   @Delete(':id')
+  @Roles(UserRole.admin)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: API_MESSAGES.CATEGORY.DELETED })
   @ApiNotFoundResponse({ description: API_MESSAGES.CATEGORY.NOT_FOUND })

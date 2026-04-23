@@ -8,6 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import { UserRole } from '@prisma/client';
 import { API_MESSAGES } from 'src/common/constants/api-messages.constants';
+import { ROLES_KEY } from '../decorators/roles.decorator';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -31,21 +32,28 @@ export class RolesGuard implements CanActivate {
       return false;
     }
 
-    if (user.role === UserRole.ADMIN || request.path === '/auth/logout') {
+    if (user.role === UserRole.admin) {
       return true;
     }
 
-    if (user.role === UserRole.VIEWER) {
-      if (method !== 'GET') {
-        throw new ForbiddenException(API_MESSAGES.ROLES.VIEWER_LIMITATIONS);
-      }
+    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+
+    if (!requiredRoles || requiredRoles.length === 0) return true;
+
+    const isOwnPasswordUpdate =
+      method === 'PUT' && request.params?.id && request.params.id === user.id;
+
+    if (isOwnPasswordUpdate) {
       return true;
     }
 
-    if (user.role === UserRole.EDITOR) {
-      return true;
+    if (!requiredRoles.includes(user.role)) {
+      throw new ForbiddenException(API_MESSAGES.ROLES.FORBIDDEN);
     }
 
-    throw new ForbiddenException(API_MESSAGES.ROLES.FORBIDDEN);
+    return true;
   }
 }
