@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import {
   Injectable,
   BadRequestException,
@@ -55,14 +54,9 @@ export class AuthService {
       throw new BadRequestException(API_MESSAGES.AUTH.BUSY_LOGIN);
     }
 
-    const hash = await bcrypt.hash(
-      dto.password,
-      Number(process.env.CRYPT_SALT),
-    );
-
     const user = await this.userService.create({
       login: dto.login,
-      password: hash,
+      password: dto.password,
     });
 
     return { id: user.id };

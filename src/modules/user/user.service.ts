@@ -3,22 +3,18 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import { CRYPT_SALT } from '../../common/constants/app.constants';
 import { User } from './types/user.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserRole } from '@prisma/client';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { API_MESSAGES } from 'src/common/constants/api-messages.constants';
-import { CommentService } from '../comment/comment.service';
-import { ArticleService } from '../article/article.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly articleService: ArticleService,
-    private readonly commentService: CommentService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   private mapUser(user: any): User {
     return {
@@ -49,10 +45,11 @@ export class UserService {
   }
 
   async create(dto: CreateUserDto): Promise<User> {
+    const hash = await bcrypt.hash(dto.password, CRYPT_SALT);
     const user = await this.prisma.user.create({
       data: {
         login: dto.login,
-        password: dto.password,
+        password: hash,
         role: dto.role ?? UserRole.viewer,
       },
     });
@@ -61,15 +58,20 @@ export class UserService {
 
   async updatePassword(id: string, dto: UpdatePasswordDto): Promise<User> {
     const user = await this.findById(id);
+    const isPasswordCorrect = await bcrypt.compare(
+      dto.oldPassword,
+      user.password,
+    );
 
-    if (user.password !== dto.oldPassword) {
+    if (!isPasswordCorrect) {
       throw new ForbiddenException(API_MESSAGES.USER.WRONG_PASSWORD);
     }
 
+    const hash = await bcrypt.hash(dto.newPassword, CRYPT_SALT);
     const updatedUser = await this.prisma.user.update({
       where: { id },
       data: {
-        password: dto.newPassword,
+        password: hash,
       },
     });
     return this.mapUser(updatedUser);
