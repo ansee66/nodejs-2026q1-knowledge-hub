@@ -13,4 +13,10 @@ export const makePrismaMock = () => ({
     update: vi.fn(),
     delete: vi.fn(),
   },
+  comment: {
+    findMany: vi.fn(),
+    findUnique: vi.fn(),
+    create: vi.fn(),
+    delete: vi.fn(),
+  },
 });
