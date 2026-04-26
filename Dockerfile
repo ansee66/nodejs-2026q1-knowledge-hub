@@ -28,6 +28,7 @@ COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/prisma.config.ts ./prisma.config.ts
 
 RUN addgroup -S app && adduser -S app -G app
+RUN mkdir -p logs && chown -R app:app /app
 USER app
 
 EXPOSE 4000
