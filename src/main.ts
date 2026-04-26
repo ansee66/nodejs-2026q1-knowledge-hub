@@ -35,7 +35,12 @@ async function bootstrap() {
   const server = await app.listen(port);
 
   const shutdown = async (error: Error, eventName: string) => {
-    logger.error(`${eventName}: ${error.message}`, error.stack, 'Process');
+    const isFatal = eventName === 'uncaughtException';
+    if (isFatal) {
+      logger.fatal(`${eventName}: ${error.message}`, error.stack, 'Process');
+    } else {
+      logger.error(`${eventName}: ${error.message}`, error.stack, 'Process');
+    }
 
     try {
       server.close();

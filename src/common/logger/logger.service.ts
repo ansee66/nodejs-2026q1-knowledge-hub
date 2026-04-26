@@ -92,4 +92,12 @@ export class AppLogger implements LoggerService {
   verbose(message: string, context?: string): void {
     this.write('verbose', message, context);
   }
+
+  fatal(message: string, trace?: string, context?: string): void {
+    this.write(
+      'error',
+      `FATAL: ${trace ? `${message}\n${trace}` : message}`,
+      context,
+    );
+  }
 }
