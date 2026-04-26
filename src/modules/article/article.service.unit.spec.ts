@@ -170,9 +170,7 @@ describe('ArticleService', () => {
 
     it('creates article with tags', async () => {
       const tags = ['nestjs', 'typescript'];
-      prisma.article.create.mockResolvedValue(
-        makePrismaArticleWithTags(tags),
-      );
+      prisma.article.create.mockResolvedValue(makePrismaArticleWithTags(tags));
 
       const result = await service.create(
         { ...BASE_CREATE_DTO, tags },

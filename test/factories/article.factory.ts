@@ -19,7 +19,10 @@ export const makePrismaArticle = (overrides = {}) => ({
   ...overrides,
 });
 
-export const makePrismaArticleWithTags = (tagNames: string[], overrides = {}) => ({
+export const makePrismaArticleWithTags = (
+  tagNames: string[],
+  overrides = {},
+) => ({
   ...ARTICLE_FACTORY_DEFAULTS,
   tags: tagNames.map((name) => ({ id: `tag-${name}`, name })),
   ...overrides,
