@@ -48,6 +48,7 @@ export class UserController {
   }
 
   @Put(':id')
+  @Roles(UserRole.admin)
   @ApiNotFoundResponse({ description: API_MESSAGES.USER.NOT_FOUND })
   async updatePassword(
     @Param('id') id: string,
