@@ -4,9 +4,14 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import 'dotenv/config';
 import { AppModule } from './app.module';
 import { APP_CONFIG } from './common/constants/app.constants';
+import { AppLogger } from './common/logger/logger.service';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const logger = new AppLogger();
+
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  app.useLogger(logger);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -15,6 +20,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  app.useGlobalFilters(new GlobalExceptionFilter(logger));
 
   const config = new DocumentBuilder()
     .setTitle(APP_CONFIG.SWAGGER.TITLE)
@@ -25,7 +32,30 @@ async function bootstrap() {
   SwaggerModule.setup(APP_CONFIG.SWAGGER.PATH, app, document);
 
   const port = process.env.PORT || APP_CONFIG.PORT;
+  const server = await app.listen(port);
 
-  await app.listen(port);
+  const shutdown = async (error: Error, eventName: string) => {
+    logger.error(`${eventName}: ${error.message}`, error.stack, 'Process');
+
+    try {
+      server.close();
+      await app.close();
+    } finally {
+      process.exit(1);
+    }
+  };
+
+  process.on('uncaughtException', (error) =>
+    shutdown(error, 'uncaughtException'),
+  );
+
+  process.on('unhandledRejection', (reason) =>
+    shutdown(
+      reason instanceof Error ? reason : new Error(String(reason)),
+      'unhandledRejection',
+    ),
+  );
+
+  logger.log(`Application is running on port ${port}`, 'Bootstrap');
 }
 bootstrap();
