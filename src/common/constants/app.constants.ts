@@ -12,3 +12,10 @@ export const APP_CONFIG = {
 export const CRYPT_SALT = Number.isFinite(Number(process.env.CRYPT_SALT))
   ? Number(process.env.CRYPT_SALT)
   : 10;
+
+export const SENSITIVE_FIELDS = [
+  'password',
+  'token',
+  'accessToken',
+  'refreshToken',
+];
