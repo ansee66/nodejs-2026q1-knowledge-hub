@@ -9,6 +9,7 @@ import { ArticleModule } from './modules/article/article.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { AiModule } from './modules/ai/ai.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from './modules/auth/guards/roles.guard';
@@ -23,6 +24,7 @@ import { LoggingMiddleware } from './common/middleware/logging.middleware';
     CategoryModule,
     ArticleModule,
     CommentModule,
+    AiModule,
     ThrottlerModule.forRoot([
       {
         ttl: Number(process.env.IP_TIME_LIMIT),
