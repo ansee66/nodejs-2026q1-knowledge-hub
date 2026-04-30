@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AppLogger } from '../logger/logger.service';
-import { BaseHttpError } from '../errors/http.errors';
 
 const CONTEXT = 'ExceptionFilter';
 
@@ -37,14 +36,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     message: string;
     error: string;
   } {
-    if (exception instanceof BaseHttpError) {
-      return {
-        statusCode: exception.statusCode,
-        message: exception.message,
-        error: exception.name,
-      };
-    }
-
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
       const res = exception.getResponse();
