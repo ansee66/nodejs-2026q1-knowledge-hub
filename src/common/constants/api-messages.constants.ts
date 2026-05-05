@@ -49,4 +49,8 @@ export const API_MESSAGES = {
     EDITOR_LIMITATIONS: 'You can manage only your materials',
     CATEGORY_LIMITATIONS: 'You can not manage categories',
   },
+
+  AI: {
+    GENERATION_FAILED: 'AI generation failed',
+  },
 } as const;
