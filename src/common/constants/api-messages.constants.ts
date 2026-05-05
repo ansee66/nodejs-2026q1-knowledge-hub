@@ -61,5 +61,6 @@ export const API_MESSAGES = {
     SERVICE_UNAVAILABLE: 'AI service unavailable',
     UNKNOWN_ERROR: 'Unknown AI error',
     GEMINI_API_ERROR: 'Gemini API Error',
+    INVALID_AI_RESPONSE_FORMAT: 'Invalid AI response format',
   },
 } as const;
