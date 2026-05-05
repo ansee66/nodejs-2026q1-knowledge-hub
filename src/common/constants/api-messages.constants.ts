@@ -62,5 +62,6 @@ export const API_MESSAGES = {
     UNKNOWN_ERROR: 'Unknown AI error',
     GEMINI_API_ERROR: 'Gemini API Error',
     INVALID_AI_RESPONSE_FORMAT: 'Invalid AI response format',
+    TOO_MANY_REQUESTS: 'Too many AI requests',
   },
 } as const;
