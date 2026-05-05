@@ -26,6 +26,10 @@ export const API_MESSAGES = {
   COMMON: {
     INVALID_UUID: 'Invalid UUID',
     BAD_REQUEST: 'Bad request',
+    INVALID_API_KEY: 'Invalid API key',
+    NETWORK_ERROR: 'Network or timeout error',
+    RETRY_LATER: 'Please retry later',
+    SERVICE_ERROR: 'Upstream service error',
   },
 
   AUTH: {
@@ -52,5 +56,10 @@ export const API_MESSAGES = {
 
   AI: {
     GENERATION_FAILED: 'AI generation failed',
+    AUTH_FAILED: 'AI authentication failed',
+    RATE_LIMIT: 'AI service rate limit exceeded',
+    SERVICE_UNAVAILABLE: 'AI service unavailable',
+    UNKNOWN_ERROR: 'Unknown AI error',
+    GEMINI_API_ERROR: 'Gemini API Error',
   },
 } as const;

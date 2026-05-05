@@ -13,8 +13,8 @@ import { AiModule } from './modules/ai/ai.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from './modules/auth/guards/roles.guard';
-import { AppLogger } from './common/logger/logger.service';
 import { LoggingMiddleware } from './common/middleware/logging.middleware';
+import { LoggerModule } from './common/logger/logger.module';
 
 @Module({
   imports: [
@@ -25,6 +25,7 @@ import { LoggingMiddleware } from './common/middleware/logging.middleware';
     ArticleModule,
     CommentModule,
     AiModule,
+    LoggerModule,
     ThrottlerModule.forRoot([
       {
         ttl: Number(process.env.IP_TIME_LIMIT),
@@ -34,7 +35,6 @@ import { LoggingMiddleware } from './common/middleware/logging.middleware';
   ],
   controllers: [AppController],
   providers: [
-    AppLogger,
     AppService,
     {
       provide: APP_GUARD,
